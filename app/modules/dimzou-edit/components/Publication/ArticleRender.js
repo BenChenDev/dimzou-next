@@ -18,6 +18,7 @@ import PublicationDocker from './PublicationDocker';
 
 function ArticleRender() {
   const publicationState = useContext(PublicationContext);
+  logging.debug('publication context', publicationState);
   const currentUser = useSelector(selectCurrentUser);
 
   const template = getTemplate(publicationState);

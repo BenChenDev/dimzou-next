@@ -12,6 +12,8 @@ export const ScrollContext = createContext({});
 
 export const MeasureContext = createContext();
 
+export const BundleLocationContext = createContext();
+
 export const useMeasure = (deps) => {
   const measure = useContext(MeasureContext);
   useEffect(() => {

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import classNames from 'classnames';
 // import className from 'classnames';
@@ -38,13 +38,14 @@ import {  ROLE_OWNER } from '../../constants';
 import { groupByStatus } from '../../utils/bundle';
 
 import './style.scss';
+import { BundleLocationContext } from '../../context';
 
 const PAGE_SIZE = 999;
 
 function UserDraftsPanel(props) {
   const { expandedCache } = props;
   const userDraftsState = useSelector(selectUserDraftsState);
-  // const workspace = useContext(WorkspaceContext);
+  const bundleLocationContext = useContext(BundleLocationContext);
   const currentUser = useSelector(selectCurrentUser);
   const dispatch = useDispatch();
   const scrollBoxWrap = useRef(null);
@@ -63,7 +64,7 @@ function UserDraftsPanel(props) {
   const backUsername = useSelector((state) => selectUsername(state, { userId: props.backUserId }));
 
   const { data, loaded, ids } = userDraftsState;
-
+  logging.debug('user draft state', userDraftsState);
   const bundleNodes = useMemo(() => {
     const extraNodes = loaded.filter((item) => !ids[item.id]);
     const flatNodes = data ? data.reduce((els, bundle) => els.concat(bundle, bundle.all_copies ? bundle.all_copies : [] ), []) : [];
@@ -98,6 +99,7 @@ function UserDraftsPanel(props) {
     if (roleGrouped.participated && roleGrouped.participated.length) {
       output.hasParticipated = true;
     }
+    bundleLocationContext.setClassifiedBundle(output);
     return output;
   }, [bundleNodes, currentUser.uid]);
 
@@ -182,7 +184,7 @@ function UserDraftsPanel(props) {
                 <div>
                   {classified.created.published.map((b) => (
                     <BundleNode 
-                      type="publication" 
+                      type="created-publication" 
                       currentUser={currentUser} 
                       data={b} 
                       key={b.id} 
@@ -200,7 +202,8 @@ function UserDraftsPanel(props) {
                 </div>
                 <div>
                   {classified.created.draft.map((b) => (
-                    <BundleNode 
+                    <BundleNode
+                      type="created-draft" 
                       currentUser={currentUser} 
                       data={b} 
                       key={b.id} 
@@ -219,6 +222,7 @@ function UserDraftsPanel(props) {
                 <div className="dz-DraftsPanelSubSection__content dz-DraftsPanelSubSection__content_archived">
                   {classified.created.published.map((b) => (
                     <BundleNode 
+                      type="archived"
                       currentUser={currentUser} 
                       data={b} 
                       key={b.id} 
@@ -244,7 +248,7 @@ function UserDraftsPanel(props) {
                 <div>
                   {classified.participated.published.map((b) => (
                     <BundleNode 
-                      type="publication" 
+                      type="participated-publication" 
                       showRoleOfUser={currentUser.uid} 
                       currentUser={currentUser} 
                       data={b} 
@@ -264,6 +268,7 @@ function UserDraftsPanel(props) {
                 <div>
                   {classified.participated.draft.map((b) => (
                     <BundleNode 
+                      type="participated-draft"
                       showRoleOfUser={currentUser.uid} 
                       currentUser={currentUser} 
                       data={b} 

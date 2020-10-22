@@ -9,16 +9,16 @@ import DraggableNodeLabel from './DraggableNodeLabel';
 import RoleIcon from '../RoleIcon'
 import { NODE_TYPE_COVER, NODE_STATUS_PUBLISHED } from '../../constants'
 import { getUserRole } from '../../utils/collaborators';
-import { WorkspaceContext, ScrollContext } from '../../context';
+import { WorkspaceContext, ScrollContext, BundleLocationContext } from '../../context';
 import { LabelButton } from '../ScrollButton';
 import { getAsPath } from '../../utils/router';
 import Outline from './Outline';
-
 
 export default function Node(props) {
   const { data, index, bundleId, currentUser, onSort, type } = props;
   const workspace = useContext(WorkspaceContext);
   const scrollContext = useContext(ScrollContext);
+  const bundleLocationContext = useContext(BundleLocationContext);
   const isPublication = type === 'publication';
   const isCurrent = String(data.id) === workspace.nodeId && (workspace.isPublicationView === isPublication);
   const isCoverNode = data.node_type === NODE_TYPE_COVER;
@@ -57,6 +57,7 @@ export default function Node(props) {
               onClick={() => {
                 window.scrollTo(0, 0);
                 Router.push(href, getAsPath(href));
+                bundleLocationContext.setCurrentBundleId(href.query.bundleId)
               }}
               data-node-level='node'
             >

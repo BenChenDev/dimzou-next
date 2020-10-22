@@ -23,7 +23,7 @@ import RoleIcon from '../RoleIcon';
 import { NODE_TYPE_CHAPTER, BUNDLE_STATUS_PUBLISHED } from '../../constants';
 
 import { getVersionLabel } from '../../utils/bundle';
-import { WorkspaceContext, ScrollContext } from '../../context'
+import { WorkspaceContext, ScrollContext, BundleLocationContext } from '../../context'
 // import pageAddIcon from '../../assets/icon-page-add.svg';
 import pageIcon from '../../assets/icon-page.svg';
 import pagePublishedIcon from '../../assets/icon-page-published.svg';
@@ -51,8 +51,9 @@ export default function BundleNode(props) {
   const dispatch = useDispatch();
   const workspace = useContext(WorkspaceContext);
   const scrollContext = useContext(ScrollContext);
+  const bundleLocationContext = useContext(BundleLocationContext);
   const router = useRouter();
-  const isPublication = type === 'publication';
+  const isPublication = type === 'created-publication' || 'participated-publication';
   const isCurrent = workspace.bundleId === String(data.id) && (
     workspace.isPublicationView === isPublication
   );
@@ -249,6 +250,8 @@ export default function BundleNode(props) {
                 onClick={() => {
                   window.scrollTo(0, 0);
                   router.push(linkInfo.href, linkInfo.as);
+                  logging.debug('after router push', linkInfo.href, linkInfo.as);
+                  bundleLocationContext.setCurrentBundleId(href.query.bundleId);
                 }}
                 data-node-level='bundle'
                 data-is-multi-chapter={isMulti}

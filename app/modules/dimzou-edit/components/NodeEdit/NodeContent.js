@@ -35,6 +35,7 @@ import {
   UserCapabilitiesContext,
   ScrollContext,
   OwnerContext,
+  BundleLocationContext,
 } from '../../context';
 import MeasureProvider from '../../providers/MeasureProvider';
 import {
@@ -51,17 +52,21 @@ import { getActiveHash } from './utils';
 import { getAsPath } from '../../utils/router';
 import { groupByStatus } from '../../utils/bundle';
 import { getNodeCache } from '../../utils/cache';
+
 const TRANSITION_DURATION = 100;
 const DROP_REGION_HEIGHT = 40;
 const PARA_NUM_OFFSET = 56;
 const CONTENT_WIDTH = 720;
 const ELEMENT_DEFAULT_HEIGHT = 160;
+
 function NodeContent(props) {
   const nodeState = useContext(NodeContext);
   const bundleState = useContext(BundleContext);
+  const bundleLocationContext = useContext(BundleLocationContext);
+  logging.debug('bundle context', bundleState);
   const userCapabilities = useContext(UserCapabilitiesContext);
-  const ownerContext = useContext(OwnerContext);
-  const { uid } = ownerContext;
+  const ownerContext = useContext(OwnerContext);logging.debug('owner context', ownerContext);
+  const { uid } = ownerContext;logging.debug('uid', uid);
   const currentUser = useSelector(selectCurrentUser);
   const scrollContext = useContext(ScrollContext);
   const currentUserDrafts = useSelector(selectUserDraftsState); // get current user's drafts, you are the current user
@@ -104,7 +109,7 @@ function NodeContent(props) {
       const { data: draftData, loaded, ids } = isCurrentDimZou
         ? currentUserDrafts
         : userDrafts;
-
+      logging.debug('draftData', draftData);
       const extraNodes = loaded.filter((item) => !ids[item.id]);
       const flatNodes = draftData
         ? draftData.reduce(
@@ -144,7 +149,7 @@ function NodeContent(props) {
     },
     [uid],
   );
-
+  logging.debug('drafts', drafts);
   const [blockSections, nameIndexMap] = useMemo(
     () => {
       const sections = [];

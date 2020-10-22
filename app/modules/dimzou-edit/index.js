@@ -15,6 +15,7 @@ import { WorkspaceContext } from './context'
 
 import DimzouApp from './components/App';
 import ScrollContextProvider from './providers/ScrollContextProvider';
+import BundleContextProvider from './providers/BundleLocationProvider';
 
 const isTrue = (value) => value === true || value === 'true'
 
@@ -34,8 +35,10 @@ function DimzouEdit(props) {
   return (
     <WorkspaceContext.Provider value={combined}>
       <ScrollContextProvider>
-        <DimzouApp />
-        {!combined.userId && <BackButton />}
+        <BundleContextProvider>
+          <DimzouApp />
+          {!combined.userId && <BackButton />}
+        </BundleContextProvider>
       </ScrollContextProvider>
     </WorkspaceContext.Provider>
   )

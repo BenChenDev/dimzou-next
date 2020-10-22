@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useContext, useEffect, useMemo, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import groupBy from 'lodash/groupBy';
@@ -25,12 +25,15 @@ import intlMessages, { menu as menuMessages, bundleStatus as statusMessages } fr
 import {  ROLE_OWNER } from '../../constants';
 import { groupByStatus } from '../../utils/bundle';
 import { SUBSCRIPTION_ENTITY_TYPE_DIMZOU } from '../../../subscription/constants';
+import { BundleLocationContext } from '../../context';
 
 const PAGE_SIZE = 999;
 
 function UserRelatedDrafts(props) {
   const { expandedCache } = props;
+  const bundleLocationContext = useContext(BundleLocationContext);
   const userRelatedDrafts = useSelector((state) => selectUserRelatedDrafts(state, props)) || {};
+  logging.debug('user Realted drafts', userRelatedDrafts);
   const dispatch = useDispatch();
   const currentUser = useSelector(selectCurrentUser);
   const username = useSelector((state) => selectUsername(state, props));
@@ -95,6 +98,7 @@ function UserRelatedDrafts(props) {
     if (roleGrouped.participated && roleGrouped.participated.length) {
       output.hasParticipated = true;
     }
+    bundleLocationContext.setClassifiedBundle(output);
     return output;
   }, [bundleNodes]);
 
@@ -171,7 +175,7 @@ function UserRelatedDrafts(props) {
                 <div>
                   {classified.created.published.map((b) => (
                     <BundleNode 
-                      type="publication" 
+                      type="created-publication" 
                       currentUser={currentUser} 
                       data={b} 
                       key={b.id} 
@@ -190,6 +194,7 @@ function UserRelatedDrafts(props) {
                 <div>
                   {classified.created.draft.map((b) => (
                     <BundleNode 
+                      type="created-draft"
                       currentUser={currentUser} 
                       data={b} 
                       key={b.id} 
@@ -208,6 +213,7 @@ function UserRelatedDrafts(props) {
                 <div className="dz-DraftsPanelSubSection__content dz-DraftsPanelSubSection__content_archived">
                   {classified.created.published.map((b) => (
                     <BundleNode 
+                      type="archived"
                       currentUser={currentUser} 
                       data={b} 
                       key={b.id} 
@@ -233,7 +239,7 @@ function UserRelatedDrafts(props) {
                 <div>
                   {classified.participated.published.map((b) => (
                     <BundleNode 
-                      type="publication" 
+                      type="participated-publication" 
                       showRoleOfUser={props.userId} 
                       currentUser={currentUser} 
                       data={b} 
@@ -253,6 +259,7 @@ function UserRelatedDrafts(props) {
                 <div>
                   {classified.participated.draft.map((b) => (
                     <BundleNode 
+                      type="participated-draft"
                       showRoleOfUser={props.userId} 
                       currentUser={currentUser} 
                       data={b} 
